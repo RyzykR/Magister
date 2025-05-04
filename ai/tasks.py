@@ -1,6 +1,6 @@
 from celery_app import celery_app
 from api.services import get_sync_messages_collection
-from api.models import MessageIn
+from notification_service.tasks import schedule_immediate_if_critical
 from ai.bert_model import classifier
 from ai.configs import prompt, candidate_labels, hypothesis_template
 from bson import ObjectId
@@ -27,4 +27,5 @@ def analyze_message(message_id: str):
         {"_id": ObjectId(message_id)},
         {"$set": {"analysis": result}}
     )
+    schedule_immediate_if_critical(message_id)
     return {"id": message_id, "analysis": result}
