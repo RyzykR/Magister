@@ -1,12 +1,21 @@
 
 
 prompt = (
-    "You are an expert SRE. Evaluate the severity of the following error "
-    "based on its potential impact on system availability, data integrity, "
-    "and end users experience. Take into account number of users it could effect, errors affecting 100% users are critical, and for 1 it's low"
-    "Error:\n\n"
+    "You are an expert Site Reliability Engineer.\n"
+    "Classify the following error into one of: critical, high, medium, low.\n\n"
+    "Criteria:\n"
+    "- 100% users impacted → critical\n"
+    "- 1 user impacted → low\n\n"
+    "Examples of critical errors:\n"
+    "- Database connection failure\n"
+    "- Service unavailable\n\n"
+    "Examples of low-severity errors:\n"
+    "- Incorrect password\n"
+    "- Resource not found\n\n"
+    "Return only the single word severity.\n"
+    "Error:\n"
 )
 
-candidate_labels = ["critical", "high", "medium", "low"]
+candidate_labels = [ "medium", "low", "high", "critical", ]
 
-hypothesis_template = "sverity: {}"
+hypothesis_template = "severity: {}"

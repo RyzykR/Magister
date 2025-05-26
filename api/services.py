@@ -2,15 +2,13 @@
 
 import os
 from dotenv import load_dotenv
-
-# асинхронний клієнт
 from motor.motor_asyncio import AsyncIOMotorClient
-# синхронний клієнт
 from pymongo import MongoClient
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
+print(f"MONGO_URI: {MONGO_URI}")
 if not MONGO_URI:
     raise RuntimeError("MONGO_URI not set in environment")
 

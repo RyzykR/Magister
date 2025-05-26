@@ -10,19 +10,17 @@ def analyze_message(message_id: str):
     print("-"*30)
     print("start analyzing")
     coll = get_sync_messages_collection()
-    # 1) Завантажити документ
     doc = coll.find_one({"_id": ObjectId(message_id)})
     if not doc:
         return {"error": "not found"}
 
-    # 2) Проаналізувати content
     result = classifier(
         prompt + doc["content"],
         candidate_labels=candidate_labels,
         hypothesis_template=hypothesis_template
     )
-    print(f"Result: {result}")
-    # 3) Зберегти результат в полі analysis
+    # print(f"Result: {result}")
+
     coll.update_one(
         {"_id": ObjectId(message_id)},
         {"$set": {"analysis": result}}

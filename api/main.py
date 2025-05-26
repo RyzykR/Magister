@@ -14,7 +14,6 @@ async def create_message(message: MessageIn):
         raise HTTPException(500, "Cannot store message")
     message_id = str(res.inserted_id)
 
-    # запустити Celery-таск
     celery_app.send_task("ai.tasks.analyze_message", args=[message_id])
 
     return {"id": message_id, "status": "queued_for_analysis"}

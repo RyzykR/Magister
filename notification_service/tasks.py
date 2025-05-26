@@ -7,10 +7,8 @@ from api.services import get_sync_messages_collection
 
 load_dotenv()
 
-# Інтервал пакету в хвилинах
 DISPATCH_INTERVAL = int(os.getenv("DISPATCH_INTERVAL_MINUTES", 5))
 
-# Синхронна колекція
 messages_collection = get_sync_messages_collection()
 
 
@@ -23,7 +21,7 @@ def send_message(message_id: str):
     if not doc:
         return {"error": "message not found", "id": message_id}
 
-    # --- тут інтегруйте свій канал (email/SMS/Push) ---
+    # --- (email/SMS/Push) ---
     content = doc.get("content")
     severity = doc.get("analysis", {}).get("label", "unknown")
     print(f"[SEND] ({severity}) {message_id}: {content}")
@@ -58,7 +56,6 @@ def dispatch_non_critical():
     return {"dispatched_non_critical": count}
 
 
-# Для миттєвої відправки критичних повідомлень:
 def schedule_immediate_if_critical(message_id: str):
     doc = messages_collection.find_one({"_id": ObjectId(message_id)})
     if doc and doc.get("analysis", {}).get("label") == "critical":
