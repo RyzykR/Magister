@@ -1,0 +1,60 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/magister
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - mongo
+      - redis
+
+  worker:
+    build:
+      context: .
+      target: worker
+    command: celery -A celery_app.celery_app worker --loglevel=info -Q ai_queue
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/magister
+      - REDIS_URL=redis://redis:6379/0
+      - AI_MODEL=distilbert-base-uncased-finetuned-sst-2-english
+      - TRANSFORMERS_CACHE=/cache/huggingface
+    volumes:
+      - huggingface-cache:/cache/huggingface
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=magister
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    command:
+      - redis-server
+      - "--save"
+      - "60"
+      - "1"
+      - "--loglevel"
+      - "warning"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  huggingface-cache:
+  mongo-data:
+  redis-data:
