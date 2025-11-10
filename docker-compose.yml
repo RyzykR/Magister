@@ -22,7 +22,9 @@ services:
       - MONGO_URI=mongodb://mongo:27017/magister
       - REDIS_URL=redis://redis:6379/0
       - AI_MODEL=distilbert-base-uncased-finetuned-sst-2-english
+      - AI_PROVIDER=openai
       - TRANSFORMERS_CACHE=/cache/huggingface
+      - OPENAI_API_KEY=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
     volumes:
       - huggingface-cache:/cache/huggingface
     depends_on:

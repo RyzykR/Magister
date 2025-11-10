@@ -1,7 +1,9 @@
+import ast
 import json
 import os
-from typing import Dict, List, Optional
+import re
 
+from typing import Dict, List, Optional
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
 
@@ -71,32 +73,77 @@ def classify_severity(message: str, *, system_prompt: str, labels: List[str]) ->
                 "content": message,
             },
         ],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "severity_classification",
-                "schema": _build_response_schema(labels),
-            },
-        },
     )
 
     try:
-        # The Responses API returns JSON in a text block that matches the schema.
-        payload = response.output[0].content[0].text
-        data = json.loads(payload)
+        data = extract_json_from_text(response.output_text)
     except (IndexError, KeyError, json.JSONDecodeError) as exc:
         raise OpenAIError(f"Could not parse response payload: {exc}") from exc
 
-    scores = {
-        label: float(data["scores"].get(label, 0))
-        for label in labels
-    }
-    label = data["label"]
+    label = data.get("severity") or data.get("label")
+    if not label:
+        raise OpenAIError("Response payload is missing `severity` label")
+
+    raw_scores = data.get("scores", {})
+    scores: Dict[str, float] = {}
+    if isinstance(raw_scores, dict):
+        for key, value in raw_scores.items():
+            try:
+                scores[key] = float(value)
+            except (TypeError, ValueError):
+                continue
 
     return {
         "label": label,
         "scores": scores,
-        "confidence": scores.get(label),
         "provider": "openai",
         "raw": response.model_dump(),
     }
+
+
+def extract_json_from_text(payload):
+    """
+    Приймає рядок/байти з можливими markdown-фенсами і повертає dict/list.
+    Підтримує:
+      - ```json ... ```
+      - просто текст з JSON усередині
+    Кидає ValueError, якщо JSON не знайдено/не парситься.
+    """
+    if payload is None:
+        raise ValueError("Empty payload")
+
+    if isinstance(payload, bytes):
+        payload = payload.decode("utf-8", errors="replace")
+
+    if not isinstance(payload, str):
+        # можливо це вже dict/list
+        return payload
+
+    s = payload.strip()
+
+    # зняти початкові/кінцеві трійні бектики з опціональною мовою
+    if s.startswith("```"):
+        # прибрати початок ```json\n або ```\n
+        s = re.sub(r"^```[a-zA-Z0-9_-]*\n", "", s)
+        # прибрати фінальні ```
+        s = re.sub(r"\n```$", "", s).strip()
+
+    # знайти перший JSON-об'єкт або масив
+    m = re.search(r"(\{.*\}|\[.*\])", s, flags=re.S)
+    if m:
+        s = m.group(1)
+
+    # основна спроба
+    try:
+        return json.loads(s)
+    except Exception:
+        pass
+
+    # обережний фолбек: ast.literal_eval для випадків з одинарними лапками
+    try:
+        py_obj = ast.literal_eval(s)
+        # конвертуємо у JSON-сумісний тип (dict/list/str/num/None/bool)
+        json.dumps(py_obj)  # перевірка серіалізації
+        return py_obj
+    except Exception as e:
+        raise ValueError(f"Cannot parse JSON from payload: {e}\nRaw: {payload!r}")

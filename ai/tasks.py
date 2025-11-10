@@ -13,8 +13,15 @@ from ai.openai_client import classify_severity
 
 OPENAI_SYSTEM_PROMPT = (
     "You are an expert Site Reliability Engineer. Classify incidents by severity "
-    "and respond with JSON that matches the provided schema."
+    "and respond with JSON containing `severity` "
+    "and an optional `scores` object keyed by candidate label."
 )
+
+
+def _select_label(scores: Dict[str, float], *, fallback: str = "unknown") -> str:
+    if scores:
+        return max(scores.items(), key=lambda item: item[1])[0]
+    return fallback
 
 
 def _classify_with_huggingface(content: str) -> Dict[str, object]:
@@ -27,7 +34,7 @@ def _classify_with_huggingface(content: str) -> Dict[str, object]:
     labels = raw_result.get("labels", [])
     scores = raw_result.get("scores", [])
     score_map = {label: float(score) for label, score in zip(labels, scores)}
-    label = labels[0] if labels else "unknown"
+    label = _select_label(score_map)
 
     return {
         "label": label,
@@ -39,11 +46,26 @@ def _classify_with_huggingface(content: str) -> Dict[str, object]:
 
 
 def _classify_with_openai(content: str) -> Dict[str, object]:
-    return classify_severity(
+    response = classify_severity(
         prompt + content,
         system_prompt=OPENAI_SYSTEM_PROMPT,
         labels=candidate_labels,
     )
+
+    scores = {
+        key: float(value)
+        for key, value in (response.get("scores") or {}).items()
+        if key in candidate_labels
+    }
+    label = _select_label(scores, fallback=response.get("label", "unknown"))
+
+    return {
+        "label": label,
+        "scores": scores,
+        "confidence": scores.get(label),
+        "provider": response.get("provider", "openai"),
+        "raw": response.get("raw", response),
+    }
 
 
 def _classify_message(content: str) -> Dict[str, object]:
