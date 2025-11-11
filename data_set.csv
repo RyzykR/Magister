@@ -1,0 +1,109 @@
+service,text,expected_label,count_1h,count_24h
+Auth,User login failed due to wrong password.,low,6,54
+API,GET /profile returned 404 for missing user.,low,5,45
+Database,Query took 120ms — within acceptable range.,low,2,21
+Payment,User attempted payment with expired card.,low,4,37
+Cache,Missed key for session lookup, fallback to DB.,low,3,29
+Storage,Uploaded file exceeds preview size limit.,low,5,42
+Queue,Background job retried once successfully.,low,2,25
+Auth,Token refresh succeeded.,low,1,15
+API,CORS preflight handled successfully.,low,4,38
+Analytics,User session event skipped due to missing ID.,low,3,27
+Notification,Email delivery delayed 1 second.,low,7,65
+Database,Auto-vacuum completed for analytics schema.,low,2,18
+Auth,OAuth redirect mismatch corrected automatically.,low,1,11
+Payment,Currency rounding difference detected (minor).,low,3,28
+Cache,Redis connection re-established after timeout.,low,1,12
+Storage,File checksum verified.,low,2,22
+Queue,Worker idle, no pending jobs.,low,8,74
+API,Pagination parameter missing, using default.,low,2,20
+Analytics,Low volume of traffic detected overnight.,low,1,14
+Notification,SMS queue drained.,low,2,17
+Database,Background index creation completed.,low,1,15
+Auth,Session expired naturally after timeout.,low,5,43
+API,Deprecated endpoint used, logged warning.,low,4,41
+Payment,Sandbox mode active, transaction ignored.,low,2,19
+Cache,LRU eviction removed unused items.,low,3,30
+Storage,Cleanup task removed temp files.,low,1,12
+Queue,Scheduled job postponed by 5s.,low,6,57
+Analytics,Report generated successfully.,low,4,40
+Notification,Webhook acknowledged by remote service.,low,2,25
+Database,Read replica lag 0.2s, normal operation.,low,2,20
+Auth,User logout detected.,low,8,75
+API,Request rate within normal limits.,low,6,61
+Payment,Test transaction skipped.,low,1,10
+Cache,Connection pool resized automatically.,low,2,16
+Storage,File renamed due to duplicate name.,low,3,29
+Queue,Message visibility timeout extended.,low,4,33
+Analytics,Missing dimension ignored.,low,3,26
+Notification,Push token invalidated.,low,1,12
+Database,Idle connection closed gracefully.,low,2,20
+Auth,MFA prompt bypassed for trusted device.,low,4,36
+API,Parameter validation warning logged.,low,5,48
+Payment,Fraud check result: safe.,low,1,13
+Cache,Prefetch completed successfully.,low,3,27
+Storage,Archive sync delayed by scheduler.,low,2,19
+Queue,Job retried automatically with success.,low,6,58
+Analytics,Export job queued.,low,2,22
+Notification,Retry after transient network error.,low,3,25
+Database,Checkpoint created at midnight.,low,1,11
+Auth,Password reset email sent.,low,5,50
+API,HEAD /health returned 200.,low,4,37
+Payment,Currency conversion fallback used.,low,2,18
+Cache,Item expired from cache.,low,7,63
+Storage,Temporary directory cleaned.,low,2,23
+Queue,Task took longer than usual but finished.,low,3,27
+Analytics,Heatmap data incomplete for user.,low,2,21
+Notification,User unsubscribed via link.,low,3,24
+Database,Write latency increased slightly.,low,4,39
+Auth,Suspicious login location flagged (info only).,low,2,16
+API,Deprecated field used in payload.,low,5,47
+Payment,Card BIN unsupported, declined gracefully.,low,3,26
+Cache,Memory usage high but stable.,low,2,20
+Storage,Missing thumbnail regenerated.,low,1,14
+Queue,Worker restarted normally.,low,4,35
+Analytics,Query cache warmed.,low,5,42
+Notification,Template variable missing, defaulted.,low,2,22
+Database,Replication paused briefly for maintenance.,low,3,28
+Auth,JWT validation warning.,low,4,38
+API,Retry attempt successful.,low,2,19
+Payment,Minor rounding adjustment applied.,low,1,11
+Cache,Rehashing dictionary keys completed.,low,2,24
+Storage,Sync verification passed.,low,3,27
+Queue,Backoff interval applied.,low,4,31
+Analytics,Segment data missing, ignored.,low,2,23
+Notification,Duplicate email prevented.,low,1,10
+Database,Index suggestion ignored.,low,2,18
+Auth,Auto logout due to inactivity.,low,5,44
+API,User agent missing, not critical.,low,3,25
+Payment,Gateway latency above baseline.,low,2,21
+Cache,Connection timeout recovered automatically.,low,3,29
+Storage,Bucket permission updated successfully.,low,2,20
+Queue,Heartbeat received from all workers.,low,4,33
+Analytics,Retention query returned empty set.,low,2,18
+Notification,FCM token refresh successful.,low,3,24
+Database,Transaction rollback due to lock wait timeout.,high,1,8
+Auth,Multiple failed login attempts detected from same IP.,high,2,10
+API,Unhandled exception in /checkout endpoint.,high,1,6
+Payment,Gateway rejected transaction unexpectedly.,high,1,5
+Storage,Write throughput degraded due to network latency.,high,1,7
+Queue,Dead letter queue reached 200 messages.,high,0,4
+Analytics,Batch job failed halfway, retry scheduled.,high,2,9
+Database,Connection pool exhausted — new connections refused.,medium,1,14
+API,Rate limit exceeded for IP 10.0.3.4.,medium,2,16
+Auth,User locked after repeated failures.,medium,1,9
+Payment,Refund operation timed out.,medium,2,15
+Cache,Cluster node temporarily unreachable.,medium,0,7
+Storage,File system at 90% capacity.,medium,1,10
+Queue,Job retried 3 times unsuccessfully.,medium,1,8
+Analytics,Memory pressure during ETL job.,medium,2,13
+Database,Primary node unreachable — failover initiated.,critical,0,2
+API,Internal server error 500 on critical endpoint /orders.,critical,1,3
+Auth,Token signing key mismatch — all sessions invalid.,critical,0,2
+Payment,Double charge detected for same transaction.,critical,0,1
+Cache,Redis cluster unreachable, causing request delays.,critical,1,3
+Storage,Data corruption detected in uploaded file.,critical,0,2
+Queue,Message broker not responding.,critical,1,2
+Analytics,Data loss during aggregation.,critical,0,1
+Notification,Email subsystem down.,critical,0,2
+Database,WAL replay failure — database halted.,critical,1,3
