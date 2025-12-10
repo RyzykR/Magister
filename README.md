@@ -4,6 +4,8 @@
 ### AI service
 ```source .env && celery -A celery_app.celery_app worker --loglevel=info -Q ai_queue```
 
+Set `AI_PROVIDER` to `huggingface`, `openai`, or `gemini` and provide the corresponding API keys (`OPENAI_API_KEY`, `GEMINI_API_KEY`) before starting the worker.
+
 ## Run with Docker
 - Build and launch the full stack (API, worker, MongoDB, Redis) with `docker compose up --build`.
 - The FastAPI service is available at `http://localhost:8000`; MongoDB and Redis are exposed on the default ports for local tooling.

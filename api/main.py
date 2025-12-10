@@ -29,7 +29,7 @@ async def create_message(message: MessageIn):
     except Exception as exc:  # noqa: BLE001
         print(f"[stats] Failed to build stats for message {message_id}: {exc}")
 
-    responce = analyze_message(message_id)
-    # celery_app.send_task("ai.tasks.analyze_message", args=[message_id])
+    # responce = analyze_message(message_id)
+    celery_app.send_task("ai.tasks.analyze_message", args=[message_id])
 
     return {"id": message_id, "status": "queued_for_analysis"}

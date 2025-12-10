@@ -14,11 +14,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence, Tuple
 
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from ai.configs import candidate_labels
 from ai.tasks import _classify_message
 
-
-DATASET_PATH = Path(__file__).resolve().parents[1] / "data_set.csv"
+DATASET_PATH = ROOT_DIR / "data_set.csv"
 
 
 @dataclass
@@ -63,6 +68,7 @@ def classify_rows(rows: Sequence[Dict[str, str]]) -> Tuple[List[str], List[str]]
         try:
             prediction = _classify_message(message).get("label", "unknown")
         except Exception as exc:  # noqa: BLE001
+            raise exc
             print(f"[warn] failed to classify row {row}: {exc}")
             prediction = "unknown"
 

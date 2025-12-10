@@ -7,16 +7,9 @@ from celery_app import celery_app
 from notification_service.tasks import schedule_immediate_if_critical
 
 from ai.bert_model import classifier
-from ai.configs import candidate_labels, hypothesis_template, prompt
-from ai.openai_client import classify_severity
-
-
-OPENAI_SYSTEM_PROMPT = (
-    "You are an expert Site Reliability Engineer. Classify incidents by severity "
-    "and respond with JSON containing `severity` "
-    "and an optional `scores` object keyed by candidate label."
-)
-
+from ai.configs import candidate_labels, hypothesis_template, prompt, system_prompt
+from ai.openai_client import classify_severity as classify_with_openai
+from ai.gemini_client import classify_severity as classify_with_gemini
 
 def _select_label(scores: Dict[str, float], *, fallback: str = "unknown") -> str:
     if scores:
@@ -46,9 +39,9 @@ def _classify_with_huggingface(content: str) -> Dict[str, object]:
 
 
 def _classify_with_openai(content: str) -> Dict[str, object]:
-    response = classify_severity(
+    response = classify_with_openai(
         prompt + content,
-        system_prompt=OPENAI_SYSTEM_PROMPT,
+        system_prompt=system_prompt,
         labels=candidate_labels,
     )
 
@@ -68,11 +61,37 @@ def _classify_with_openai(content: str) -> Dict[str, object]:
     }
 
 
+def _classify_with_gemini(content: str) -> Dict[str, object]:
+    response = classify_with_gemini(
+        prompt + content,
+        system_prompt=system_prompt,
+        labels=candidate_labels,
+    )
+
+    scores = {
+        key: float(value)
+        for key, value in (response.get("scores") or {}).items()
+        if key in candidate_labels
+    }
+    label = _select_label(scores, fallback=response.get("label", "unknown"))
+
+    return {
+        "label": label,
+        "scores": scores,
+        "confidence": scores.get(label),
+        "provider": response.get("provider", "gemini"),
+        "raw": response.get("raw", response),
+    }
+
+
 def _classify_message(content: str) -> Dict[str, object]:
     provider = os.getenv("AI_PROVIDER", "huggingface").strip().lower()
 
     if provider == "openai":
         return _classify_with_openai(content)
+
+    if provider == "gemini":
+        return _classify_with_gemini(content)
 
     return _classify_with_huggingface(content)
 
