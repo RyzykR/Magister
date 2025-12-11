@@ -1,11 +1,14 @@
 service,text,expected_label,count_1h,count_24h
 Auth,User login failed due to wrong password.,low,6,54
+Analytics,Memory pressure during ETL job.,medium,2,12
 API,GET /profile returned 404 for missing user.,low,5,45
+Database,Transaction rollback due to lock wait timeout.,high,1,5
 Database,Query took 120ms — within acceptable range.,low,2,21
 Payment,User attempted payment with expired card.,low,4,37
 Cache,Missed key for session lookup, fallback to DB.,low,3,29
 Storage,Uploaded file exceeds preview size limit.,low,5,42
 Queue,Background job retried once successfully.,low,2,25
+Payment,Double charge detected for same transaction.,critical,0,1
 Auth,Token refresh succeeded.,low,1,15
 API,CORS preflight handled successfully.,low,4,38
 Analytics,User session event skipped due to missing ID.,low,3,27
@@ -82,7 +85,6 @@ Storage,Bucket permission updated successfully.,low,2,20
 Queue,Heartbeat received from all workers.,low,4,33
 Analytics,Retention query returned empty set.,low,2,18
 Notification,FCM token refresh successful.,low,3,24
-Database,Transaction rollback due to lock wait timeout.,high,1,8
 Auth,Multiple failed login attempts detected from same IP.,high,2,10
 API,Unhandled exception in /checkout endpoint.,high,1,6
 Payment,Gateway rejected transaction unexpectedly.,high,1,5
@@ -96,11 +98,9 @@ Payment,Refund operation timed out.,medium,2,15
 Cache,Cluster node temporarily unreachable.,medium,0,7
 Storage,File system at 90% capacity.,medium,1,10
 Queue,Job retried 3 times unsuccessfully.,medium,1,8
-Analytics,Memory pressure during ETL job.,medium,2,13
 Database,Primary node unreachable — failover initiated.,critical,0,2
 API,Internal server error 500 on critical endpoint /orders.,critical,1,3
 Auth,Token signing key mismatch — all sessions invalid.,critical,0,2
-Payment,Double charge detected for same transaction.,critical,0,1
 Cache,Redis cluster unreachable, causing request delays.,critical,1,3
 Storage,Data corruption detected in uploaded file.,critical,0,2
 Queue,Message broker not responding.,critical,1,2
